@@ -5,9 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressBar = document.querySelector('.progress-bar .fill');
     const resultContainer = document.querySelector('.diagnostic-result');
     const deviceSvg = document.querySelector('.device-svg');
+    const pathInput = document.querySelector('#diagnostic_data');
+    const captchaCheckbox = document.querySelector('#diagnostic_captcha');
 
     let path = [];
     let currentNode = tree;
+
+    const maxDepth = getMaxDepth(tree);
 
     function renderStep() {
         stepsContainer.innerHTML = '';
@@ -22,10 +26,14 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.textContent = option;
             btn.className = 'diagnostic-btn';
             btn.onclick = () => {
+                const nextNode = currentNode[option];
+                if (Object.keys(nextNode).includes('итог') && captchaCheckbox && !captchaCheckbox.checked) {
+                    alert('Подтвердите, что вы не робот');
+                    return;
+                }
                 path.push(option);
-                currentNode = currentNode[option];
+                currentNode = nextNode;
                 updateProgress();
-                animateRepair();
                 renderStep();
             };
             stepsContainer.appendChild(btn);
@@ -43,7 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentNode = currentNode[step];
                 }
                 updateProgress();
-                animateRepair(true);
                 renderStep();
             };
             stepsContainer.appendChild(backBtn);
@@ -51,9 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateProgress() {
-        const percent = Math.min(100, Math.floor((path.length / 5) * 100));
+        const percent = Math.min(100, Math.floor((path.length / maxDepth) * 100));
         progressBar.style.width = percent + '%';
         progressBar.style.backgroundColor = `hsl(${percent}, 70%, 50%)`;
+        animateRepair(percent);
+        if (pathInput) {
+            pathInput.value = JSON.stringify(path);
+        }
     }
 
     function renderResult(resultText) {
@@ -61,18 +72,36 @@ document.addEventListener('DOMContentLoaded', () => {
         resultContainer.innerHTML = `
             <h2>Результат диагностики</h2>
             <p>${resultText}</p>
+            <form method="post" action="${diagnosticTree.pdf_url}">
+                <input type="hidden" name="diagnostic_steps" value='${JSON.stringify(path)}'>
+                <input type="hidden" name="diagnostic_result" value="${resultText}">
+                <input type="hidden" name="_wpnonce" value="${diagnosticTree.pdf_nonce}">
+                <button type="submit">Скачать PDF</button>
+            </form>
             <a href="https://t.me/${diagnosticTree.telegram_link}" class="telegram-link" target="_blank">Написать в Telegram</a>
         `;
         resultContainer.style.display = 'block';
         updateProgress();
     }
 
-    function animateRepair(reverse = false) {
+    function animateRepair(percent = 0) {
         if (!deviceSvg) return;
         deviceSvg.innerHTML = `<svg width="100" height="100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" fill="${reverse ? '#ccc' : '#4caf50'}" stroke="#333" stroke-width="5"/>
+            <circle cx="50" cy="50" r="40" fill="hsl(${percent},70%,50%)" stroke="#333" stroke-width="5"/>
         </svg>`;
     }
 
     renderStep();
 });
+
+function getMaxDepth(node) {
+    if (typeof node !== 'object' || node === null) {
+        return 0;
+    }
+    const keys = Object.keys(node);
+    if (keys.includes('итог')) {
+        return 0;
+    }
+    let depths = keys.map(k => getMaxDepth(node[k]));
+    return 1 + Math.max(0, ...depths);
+}
