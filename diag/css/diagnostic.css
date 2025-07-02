@@ -56,9 +56,10 @@
     border-radius: 8px;
 }
 
-.telegram-link {
+.messenger-link {
     display: inline-block;
     margin-top: 15px;
+    margin-right: 8px;
     padding: 10px 15px;
     background: #29b6f6;
     color: white;

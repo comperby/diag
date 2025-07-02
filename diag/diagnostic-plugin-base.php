@@ -152,11 +152,14 @@ function diagnostic_enqueue_assets() {
     }
 
     $data = array(
-        'tree' => $tree,
+        'tree'          => $tree,
         'telegram_link' => get_option('diagnostic_telegram', ''),
-        'pdf_url' => admin_url('admin-post.php?action=download_diagnostic_pdf'),
-        'pdf_nonce' => wp_create_nonce('download_diagnostic_pdf'),
-        'enable_pdf' => (bool) get_option('diagnostic_enable_pdf', 1)
+        'viber_link'    => get_option('diagnostic_viber', ''),
+        'whatsapp_link' => get_option('diagnostic_whatsapp', ''),
+        'styles'        => get_option('diagnostic_styles', ''),
+        'pdf_url'       => admin_url('admin-post.php?action=download_diagnostic_pdf'),
+        'pdf_nonce'     => wp_create_nonce('download_diagnostic_pdf'),
+        'enable_pdf'    => (bool) get_option('diagnostic_enable_pdf', 1)
     );
     wp_localize_script('diagnostic-js', 'diagnosticTree', $data);
 }

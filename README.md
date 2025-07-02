@@ -1,6 +1,6 @@
 # Device Diagnostic Plugin
 
-This plugin provides a step‑by‑step device diagnostic wizard for WordPress. Users can select a device, answer questions from a decision tree and receive recommendations with an option to download the result as PDF and contact the repair shop via Telegram.
+This plugin provides a step‑by‑step device diagnostic wizard for WordPress. Users can select a device, answer questions from a decision tree and receive recommendations with an option to download the result as PDF and contact the repair shop via Telegram, Viber or WhatsApp.
 
 ## Features
 
