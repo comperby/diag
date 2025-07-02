@@ -5,6 +5,11 @@ Description: Step-by-step device diagnostic with PDF result.
 Version: 0.1.0
 */
 
+// Load Composer autoloader if present so Dompdf is available
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+
 if (!defined('ABSPATH')) {
     exit;
 }
