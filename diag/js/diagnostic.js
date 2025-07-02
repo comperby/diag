@@ -69,17 +69,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderResult(resultText) {
         stepsContainer.style.display = 'none';
-        resultContainer.innerHTML = `
+        let html = `
             <h2>Результат диагностики</h2>
             <p>${resultText}</p>
+        `;
+        if (diagnosticTree.enable_pdf) {
+            html += `
             <form method="post" action="${diagnosticTree.pdf_url}">
                 <input type="hidden" name="diagnostic_steps" value='${JSON.stringify(path)}'>
                 <input type="hidden" name="diagnostic_result" value="${resultText}">
                 <input type="hidden" name="_wpnonce" value="${diagnosticTree.pdf_nonce}">
                 <button type="submit">Скачать PDF</button>
-            </form>
-            <a href="https://t.me/${diagnosticTree.telegram_link}" class="telegram-link" target="_blank">Написать в Telegram</a>
-        `;
+            </form>`;
+        }
+        html += `<a href="https://t.me/${diagnosticTree.telegram_link}" class="telegram-link" target="_blank">Написать в Telegram</a>`;
+        resultContainer.innerHTML = html;
         resultContainer.style.display = 'block';
         updateProgress();
     }

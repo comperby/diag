@@ -150,7 +150,8 @@ function diagnostic_enqueue_assets() {
         'tree' => $tree,
         'telegram_link' => get_option('diagnostic_telegram', ''),
         'pdf_url' => admin_url('admin-post.php?action=download_diagnostic_pdf'),
-        'pdf_nonce' => wp_create_nonce('download_diagnostic_pdf')
+        'pdf_nonce' => wp_create_nonce('download_diagnostic_pdf'),
+        'enable_pdf' => (bool) get_option('diagnostic_enable_pdf', 1)
     );
     wp_localize_script('diagnostic-js', 'diagnosticTree', $data);
 }
@@ -191,6 +192,10 @@ if (class_exists('\Elementor\Widget_Base')) {
 
 function diagnostic_handle_pdf() {
     check_admin_referer('download_diagnostic_pdf');
+
+    if (!get_option('diagnostic_enable_pdf', 1)) {
+        wp_die('PDF generation disabled');
+    }
 
     $steps  = isset($_POST['diagnostic_steps']) ? wp_unslash($_POST['diagnostic_steps']) : '';
     $result = isset($_POST['diagnostic_result']) ? wp_unslash($_POST['diagnostic_result']) : '';
